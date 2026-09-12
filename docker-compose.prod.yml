@@ -1,7 +1,7 @@
 services:
     postgres:
         image: postgres:16-alpine
-        container_name: zawosite_postgres_prod
+        container_name: zawosite_postgres
         restart: always
         environment:
             POSTGRES_USER: ${POSTGRES_USER}
@@ -10,13 +10,13 @@ services:
         volumes:
             - postgres_prod_data:/var/lib/postgresql/data
         networks:
-            - app_network
+            - internal_network
 
     api:
         build:
             context: .
             dockerfile: apps/api/Dockerfile
-        container_name: zawosite_api_prod
+        container_name: zawosite_api
         restart: always
         environment:
             POSTGRES_USER: ${POSTGRES_USER}
@@ -32,30 +32,31 @@ services:
             NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
         depends_on:
             - postgres
-        ports:
-            - '127.0.0.1:4000:4000'
         networks:
-            - app_network
+            - internal_network
+            - zawonet
 
     web:
         build:
             context: .
             dockerfile: apps/web/Dockerfile
-        container_name: zawosite_web_prod
+            args:
+                NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
+        container_name: zawosite_web
         restart: always
         environment:
             PORT: 3000
             NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
         depends_on:
             - api
-        ports:
-            - '127.0.0.1:3000:3000'
         networks:
-            - app_network
+            - zawonet
 
 volumes:
     postgres_prod_data:
 
 networks:
-    app_network:
+    internal_network:
         driver: bridge
+    zawonet:
+        external: true

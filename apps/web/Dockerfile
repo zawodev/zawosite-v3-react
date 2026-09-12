@@ -21,6 +21,8 @@ RUN pnpm install --frozen-lockfile
 # Copy source code and build Next.js app
 COPY --from=pruner /app/out/full/ .
 ENV NEXT_TELEMETRY_DISABLED=1
+ARG NEXT_PUBLIC_BACKEND_URL
+ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
 RUN pnpm --filter web build
 
 FROM base AS runner
