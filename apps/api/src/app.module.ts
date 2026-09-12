@@ -4,7 +4,6 @@ import { JwtService } from '@nestjs/jwt';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { join } from 'path';
 import { PrismaModule } from './prisma/prisma.module.js';
 
 @Module({
@@ -17,7 +16,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
             imports: [AuthModule],
             inject: [JwtService],
             useFactory: (jwtService: JwtService) => ({
-                autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+                autoSchemaFile: true,
                 sortSchema: true,
                 context: ({ req, res }: { req: any; res: any }) => {
                     const token = req.cookies?.token;
