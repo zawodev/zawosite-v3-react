@@ -1,0 +1,20 @@
+{
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2023",
+    "outDir": "./dist",
+    "declaration": false,
+    "declarationMap": false,
+    "resolveJsonModule": true,
+    "strict": true
+  },
+  "include": [
+    "src/**/*",
+    "prisma.config.ts",
+    "generated/prisma8/**/*.d.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}
+

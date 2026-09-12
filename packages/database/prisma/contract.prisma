@@ -1,0 +1,15 @@
+// use prisma-next
+
+model User {
+  id         Int          @id(map: "User_pkey") @default(autoincrement())
+  discordId  String
+  username   String
+  globalName String?
+  avatar     String?
+  email      String?
+  createdAt  Timestamp(3) @default(now())
+  updatedAt  Timestamp(3) @default(now())
+
+  @@map("User")
+  @@index([discordId], map: "User_discordId_key", unique: true)
+}

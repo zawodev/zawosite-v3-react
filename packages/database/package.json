@@ -1,0 +1,35 @@
+{
+    "name": "@repo/database",
+    "version": "0.0.1",
+    "private": true,
+    "type": "module",
+    "main": "./src/index.ts",
+    "types": "./src/index.ts",
+    "exports": {
+        ".": {
+            "import": "./src/index.ts",
+            "default": "./src/index.ts"
+        }
+    },
+    "scripts": {
+        "db:emit": "prisma contract emit",
+        "db:generate": "prisma contract emit",
+        "db:update": "prisma db update",
+        "db:plan": "prisma migration plan",
+        "db:migrate": "prisma db migrate --advance-ref db",
+        "db:infer": "prisma contract infer --output prisma/contract.prisma",
+        "db:init": "prisma db init",
+        "db:verify": "prisma db verify",
+        "db:status": "prisma migration status"
+    },
+    "dependencies": {
+        "@js-temporal/polyfill": "^0.5.1",
+        "@prisma/orm-postgres": "latest",
+        "dotenv": "^16.4.7"
+    },
+    "devDependencies": {
+        "@repo/typescript-config": "workspace:*",
+        "prisma": "latest",
+        "typescript": "^5.9.3"
+    }
+}

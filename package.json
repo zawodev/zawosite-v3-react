@@ -1,0 +1,34 @@
+{
+    "name": "zawosite-v3-react",
+    "private": true,
+    "scripts": {
+        "build": "turbo run build",
+        "dev": "turbo run dev",
+        "lint": "turbo run lint",
+        "format": "prettier --write \"**/*.{ts,tsx,md,json,css}\"",
+        "check-types": "turbo run check-types",
+        "codegen": "turbo run codegen",
+        "db:emit": "pnpm --filter @repo/database db:emit",
+        "db:update": "pnpm --filter @repo/database db:update",
+        "db:plan": "pnpm --filter @repo/database db:plan",
+        "db:migrate": "pnpm --filter @repo/database db:migrate",
+        "db:infer": "pnpm --filter @repo/database db:infer",
+        "db:init": "pnpm --filter @repo/database db:init",
+        "db:verify": "pnpm --filter @repo/database db:verify",
+        "db:status": "pnpm --filter @repo/database db:status",
+        "docker:up": "docker compose up -d",
+        "docker:down": "docker compose down",
+        "docker:prod:up": "docker compose -f docker-compose.prod.yml up -d --build",
+        "docker:prod:down": "docker compose -f docker-compose.prod.yml down",
+        "docker:prod:logs": "docker compose -f docker-compose.prod.yml logs -f"
+    },
+    "devDependencies": {
+        "prettier": "3.9.6",
+        "turbo": "^2.10.12",
+        "typescript": "^5.9.3"
+    },
+    "packageManager": "pnpm@11.25.0",
+    "engines": {
+        "node": ">=24"
+    }
+}

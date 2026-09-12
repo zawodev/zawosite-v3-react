@@ -1,0 +1,16 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Query {
+  me: UserType
+}
+
+type UserType {
+  avatar: String
+  discordId: String!
+  email: String
+  globalName: String
+  id: Int!
+  username: String!
+}

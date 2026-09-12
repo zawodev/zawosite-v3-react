@@ -1,0 +1,10 @@
+# Build outputs & caches
+dist
+.next
+.turbo
+node_modules
+coverage
+
+# Generated files
+pnpm-lock.yaml
+generated
