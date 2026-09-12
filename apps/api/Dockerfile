@@ -36,5 +36,5 @@ COPY --from=builder --chown=nestjs:nodejs /app .
 USER nestjs
 EXPOSE 4000
 
-CMD ["node", "apps/api/dist/main.js"]
+CMD ["sh", "-c", "pnpm db:migrate && node apps/api/dist/main.js"]
 
