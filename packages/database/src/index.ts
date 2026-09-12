@@ -59,22 +59,25 @@ const globalForDb = globalThis as unknown as {
     db: ReturnType<typeof postgres<Contract>> | undefined;
 };
 
-export const db =
-    globalForDb.db ??
-    postgres<Contract>({
-        url: getDatabaseUrl(),
-        contractJson,
-    });
-
-if (
-    (
-        globalThis as typeof globalThis & {
-            process?: { env?: { NODE_ENV?: string } };
-        }
-    ).process?.env?.NODE_ENV !== 'production'
-) {
-    globalForDb.db = db;
+function getClient(): ReturnType<typeof postgres<Contract>> {
+    if (!globalForDb.db) {
+        globalForDb.db = postgres<Contract>({
+            url: getDatabaseUrl(),
+            contractJson,
+        });
+    }
+    return globalForDb.db;
 }
+
+export const db: ReturnType<typeof postgres<Contract>> = new Proxy(
+    {} as ReturnType<typeof postgres<Contract>>,
+    {
+        get(_target, prop, receiver) {
+            const client = getClient();
+            return Reflect.get(client, prop, receiver);
+        },
+    },
+);
 
 export type { Contract } from '../generated/prisma8/contract.js';
 export type User = DefaultModelRow<Contract, 'User', 'public'>;
