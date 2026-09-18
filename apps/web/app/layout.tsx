@@ -5,8 +5,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-    title: 'Zawosite v3',
-    description: 'My website',
+    title: 'zawosite',
+    description: 'made by zawodev ' + 'v3.0.1',
 };
 
 export default function RootLayout({
@@ -22,4 +22,3 @@ export default function RootLayout({
         </html>
     );
 }
-
