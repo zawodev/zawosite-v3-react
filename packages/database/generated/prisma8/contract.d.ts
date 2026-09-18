@@ -22,6 +22,7 @@ import type {
 
 import type {
   ContractWithTypeMaps,
+  RelationKeys,
   TypeMaps as TypeMapsType,
 } from '@prisma/orm-postgres/family-contract/types';
 import type {
@@ -294,6 +295,27 @@ export type StorageColumnInputTypes = {
     };
   };
 };
+
+export namespace Models {
+  export type public_User = {
+    id: CodecTypes['pg/int4@1']['output'];
+    discordId: CodecTypes['pg/text@1']['output'];
+    username: CodecTypes['pg/text@1']['output'];
+    globalName: CodecTypes['pg/text@1']['output'] | null;
+    avatar: CodecTypes['pg/text@1']['output'] | null;
+    email: CodecTypes['pg/text@1']['output'] | null;
+    createdAt: CodecTypes['pg/timestamp-temporal@1']['output'];
+    updatedAt: CodecTypes['pg/timestamp-temporal@1']['output'];
+    readonly [RelationKeys]?: never;
+  };
+}
+
+export declare const models: {
+  public: {
+    User: Models.public_User;
+  };
+};
+
 export type TypeMaps = TypeMapsType<
   CodecTypes,
   QueryOperationTypes,
