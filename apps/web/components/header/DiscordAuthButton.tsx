@@ -161,7 +161,6 @@ export function DiscordAuthButton() {
     return (
         <Button onClick={handleLogin} className="bg-[#5865F2] hover:bg-[#4752C4] text-white gap-2">
             <DiscordIcon className="h-4 w-4" />
-            Zaloguj przez Discord
         </Button>
     );
 }
