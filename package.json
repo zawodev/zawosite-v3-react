@@ -1,5 +1,6 @@
 {
     "name": "zawosite-v3-react",
+    "version": "3.1.0",
     "private": true,
     "scripts": {
         "build": "turbo run build",
