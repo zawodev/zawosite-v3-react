@@ -2,8 +2,62 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
-/* next-themes when '.dark' class, treat 'dark:*' as active */
+/* next-themes (klasa css .dark) */
 @custom-variant dark (&:is(.dark *));
+
+/* TODO: nie wiem czy tutaj blob-float na pewno?*/
+/* animated background keyframes na razie tutaj nie wiem czy docelowo zostać? */
+@keyframes blob-float-1 {
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+    25% {
+        transform: translate(5%, -8%) scale(1.06);
+    }
+    50% {
+        transform: translate(-4%, 6%) scale(0.94);
+    }
+    75% {
+        transform: translate(-7%, -2%) scale(1.03);
+    }
+}
+
+@keyframes blob-float-2 {
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+    33% {
+        transform: translate(-6%, 9%) scale(1.09);
+    }
+    66% {
+        transform: translate(9%, -5%) scale(0.91);
+    }
+}
+
+@keyframes blob-float-3 {
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+    40% {
+        transform: translate(7%, 7%) scale(1.11);
+    }
+    80% {
+        transform: translate(-5%, -8%) scale(0.95);
+    }
+}
+
+/* site logo keyframe gradient przesuwa się od prawej do lewej mega cool not sure if tutaj or not */
+@keyframes gradient-slide {
+    0% {
+        background-position: 100% center;
+    }
+    100% {
+        background-position: -100% center;
+    }
+}
 
 /* mapping CSS custom properties for Tailwind tokens */
 @theme inline {
@@ -134,5 +188,15 @@
     }
     body {
         @apply bg-background text-foreground;
+    }
+    /* wszystko co interaktywne pokazuje paluch klikalny */
+    button,
+    [role='button'],
+    [role='switch'],
+    [role='checkbox'],
+    [role='radio'],
+    [role='tab'],
+    summary {
+        cursor: pointer;
     }
 }

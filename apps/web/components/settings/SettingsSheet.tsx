@@ -1,7 +1,7 @@
 'use client';
-
+/*TODO: kurwa przejrzeć ten kod bo to slop ale mi sie teraz nie chce tego sprawdzac*/
 import { useTheme } from 'next-themes';
-import { Settings } from 'lucide-react';
+import { Settings, Sun, Moon } from 'lucide-react';
 import {
     Sheet,
     SheetContent,
@@ -10,17 +10,42 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/components/ui/sheet';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 
-/**
- * Global site settings panel.
- * SheetTrigger (gear icon) can be placed anywhere in the application.
- * The Sheet slides in from the right side.
- */
+// Card do wyboru motywu — jeden z wariantów shadcn ChoiceCard
+function ThemeCard({
+    value,
+    label,
+    icon: Icon,
+    current,
+    onSelect,
+}: {
+    value: string;
+    label: string;
+    icon: typeof Sun;
+    current: string | undefined;
+    onSelect: (v: string) => void;
+}) {
+    const selected = current === value;
+    return (
+        <button
+            onClick={() => onSelect(value)}
+            className={cn(
+                'flex flex-1 flex-col items-center gap-2 rounded-lg border p-4 text-sm font-medium transition-colors',
+                selected
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border bg-background text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+            )}
+            aria-pressed={selected}
+        >
+            <Icon className="h-5 w-5" />
+            {label}
+        </button>
+    );
+}
+
 export function SettingsSheet() {
     const { theme, setTheme } = useTheme();
-    const isDark = theme === 'dark';
 
     return (
         <Sheet>
@@ -30,29 +55,35 @@ export function SettingsSheet() {
             >
                 <Settings className="h-4 w-4" />
             </SheetTrigger>
+
             <SheetContent side="right">
                 <SheetHeader>
                     <SheetTitle>Ustawienia</SheetTitle>
-                    <SheetDescription>Dostosuj wygląd i zachowanie strony.</SheetDescription>
+                    <SheetDescription>Dostosuj wygląd strony.</SheetDescription>
                 </SheetHeader>
 
                 <div className="mt-6 flex flex-col gap-6 px-4">
-                    {/* Dark / Light mode toggle */}
-                    <div className="flex items-center justify-between">
-                        <Label htmlFor="theme-toggle" className="flex flex-col gap-1">
-                            <span>Tryb ciemny</span>
-                            <span className="text-xs font-normal text-muted-foreground">
-                                Przełącz między jasnym a ciemnym motywem
-                            </span>
-                        </Label>
-                        <Switch
-                            id="theme-toggle"
-                            checked={isDark}
-                            onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
-                        />
-                    </div>
-
-                    {/* future side settings here */}
+                    <section className="flex flex-col gap-3">
+                        <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                            Motyw
+                        </h3>
+                        <div className="flex gap-2">
+                            <ThemeCard
+                                value="light"
+                                label="Jasny"
+                                icon={Sun}
+                                current={theme}
+                                onSelect={setTheme}
+                            />
+                            <ThemeCard
+                                value="dark"
+                                label="Ciemny"
+                                icon={Moon}
+                                current={theme}
+                                onSelect={setTheme}
+                            />
+                        </div>
+                    </section>
                 </div>
             </SheetContent>
         </Sheet>

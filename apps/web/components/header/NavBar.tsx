@@ -1,54 +1,138 @@
 'use client';
-
+/*TODO: kurwa przejrzeć ten kod bo to slop ale mi sie teraz nie chce tego sprawdzac*/
 import { usePathname } from 'next/navigation';
+import { Lock } from 'lucide-react';
 import {
     NavigationMenu,
+    NavigationMenuContent,
     NavigationMenuItem,
     NavigationMenuLink,
     NavigationMenuList,
+    NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
+import { SiteLogo } from '@/components/header/SiteLogo';
 import { cn } from '@/lib/utils';
 
-interface NavItem {
+interface DropdownItem {
     label: string;
     href: string;
-    /** If true, the link appears disabled (e.g. requires a role).
-     * Will be controlled by the backend in the future.
-     * */
+    description: string;
     disabled?: boolean;
 }
 
-// example tabs — will be controlled by roles from the backend in the future
-const navItems: NavItem[] = [
-    { label: 'Home', href: '/' },
-    { label: 'Projekty', href: '/projects' },
-    { label: 'Ranking', href: '/ranking' },
-    { label: 'Admin', href: '/admin', disabled: true },
+// --- Definicje linków ---
+
+const appItems: DropdownItem[] = [
+    { label: 'App1', href: '/apps/app1', description: 'Placeholder — wkrótce' },
+    { label: 'App2', href: '/apps/app2', description: 'Placeholder — wkrótce' },
 ];
+
+const programItems: DropdownItem[] = [
+    {
+        label: 'Stickers',
+        href: '/programs/stickers',
+        disabled: true,
+        description: 'Twórz i zarządzaj naklejkami',
+    },
+    { label: 'Notes', href: '/programs/notes', disabled: true, description: 'Notatki i listy' },
+    { label: 'Pulse', href: '/programs/pulse', disabled: true, description: 'Monitor aktywności' },
+    {
+        label: 'Tierlist',
+        href: '/programs/tierlist',
+        disabled: false,
+        description: 'Twórz tierlisty',
+    },
+];
+
+// DropdownLink — link w menu rozwijanym z opisem
+function DropdownLink({ item }: { item: DropdownItem }) {
+    return (
+        <NavigationMenuLink
+            href={item.disabled ? undefined : item.href}
+            className={cn(
+                'flex w-full flex-col items-start gap-0.5 rounded-sm px-3 py-2 text-sm',
+                item.disabled
+                    ? 'cursor-not-allowed opacity-50'
+                    : 'hover:bg-accent hover:text-accent-foreground',
+            )}
+            aria-disabled={item.disabled}
+        >
+            <span className="flex items-center gap-1.5 font-medium">
+                {item.disabled && <Lock className="h-3 w-3 shrink-0" />}
+                {item.label}
+            </span>
+            <span className="text-xs text-muted-foreground">{item.description}</span>
+        </NavigationMenuLink>
+    );
+}
 
 export function NavBar() {
     const pathname = usePathname();
 
+    const isAppsActive = appItems.some((i) => pathname.startsWith(i.href));
+    const isProgramsActive = programItems.some((i) => pathname.startsWith(i.href));
+
     return (
-        <NavigationMenu>
-            <NavigationMenuList className="gap-1">
-                {navItems.map((item) => (
-                    <NavigationMenuItem key={item.href}>
-                        <NavigationMenuLink
-                            href={item.disabled ? undefined : item.href}
-                            active={pathname === item.href}
+        <div className="flex items-center gap-4">
+            <SiteLogo />
+
+            {/* Nawigacja — kolejność: Apps | Programs | CV */}
+            <NavigationMenu>
+                <NavigationMenuList className="gap-1">
+                    {/* Apps */}
+                    <NavigationMenuItem>
+                        <NavigationMenuTrigger
                             className={cn(
                                 'px-4 py-2 text-sm font-medium',
-                                item.disabled &&
-                                    'opacity-40 cursor-not-allowed pointer-events-none',
+                                isAppsActive && 'bg-muted/50',
                             )}
-                            aria-disabled={item.disabled}
                         >
-                            {item.label}
+                            apps
+                        </NavigationMenuTrigger>
+                        <NavigationMenuContent>
+                            <ul className="w-56 p-1.5">
+                                {appItems.map((item) => (
+                                    <li key={item.href}>
+                                        <DropdownLink item={item} />
+                                    </li>
+                                ))}
+                            </ul>
+                        </NavigationMenuContent>
+                    </NavigationMenuItem>
+
+                    {/* Programs */}
+                    <NavigationMenuItem>
+                        <NavigationMenuTrigger
+                            className={cn(
+                                'px-4 py-2 text-sm font-medium',
+                                isProgramsActive && 'bg-muted/50',
+                            )}
+                        >
+                            programs
+                        </NavigationMenuTrigger>
+                        <NavigationMenuContent>
+                            <ul className="w-56 p-1.5">
+                                {programItems.map((item) => (
+                                    <li key={item.href}>
+                                        <DropdownLink item={item} />
+                                    </li>
+                                ))}
+                            </ul>
+                        </NavigationMenuContent>
+                    </NavigationMenuItem>
+
+                    {/* CV — zwykły link */}
+                    <NavigationMenuItem>
+                        <NavigationMenuLink
+                            href="/cv"
+                            active={pathname === '/cv'}
+                            className="px-4 py-2 text-sm font-medium"
+                        >
+                            about me
                         </NavigationMenuLink>
                     </NavigationMenuItem>
-                ))}
-            </NavigationMenuList>
-        </NavigationMenu>
+                </NavigationMenuList>
+            </NavigationMenu>
+        </div>
     );
 }
