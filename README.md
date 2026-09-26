@@ -23,13 +23,22 @@ version: v3.0.0
 - [x] NestJS Passport (JWT auth)
 - [x] Turborepo
 
-## Szybki start
+## Szybki start (Development)
 
 1. **Baza danych**: `docker compose up -d` (lub `pnpm docker:up`)
 2. **Synchronizacja bazy**: `pnpm db:emit`
 3. **Uruchomienie**: `pnpm run dev`
     - Frontend (Next.js): http://localhost:3000
     - Backend GraphQL Playground: http://localhost:4000/graphql
+
+## Deploy na serwerku
+
+```bash
+git pull
+pnpm install
+pnpm db:migrate
+pnpm docker:prod:up
+```
 
 ## TODO
 
