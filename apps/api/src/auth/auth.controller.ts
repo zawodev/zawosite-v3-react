@@ -77,12 +77,22 @@ export class AuthController {
             // 4. Wygenerowanie JWT i zapis w ciasteczku httpOnly
             const jwtToken = this.jwtService.sign({ sub: user.id });
 
-            res.cookie('token', jwtToken, {
+            const isSecure = process.env.COOKIE_SECURE !== undefined
+                ? process.env.COOKIE_SECURE === 'true'
+                : frontendUrl.startsWith('https://');
+
+            const cookieOptions: Record<string, any> = {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
+                secure: isSecure,
                 sameSite: 'lax',
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dni
-            });
+            };
+
+            if (process.env.COOKIE_DOMAIN) {
+                cookieOptions.domain = process.env.COOKIE_DOMAIN;
+            }
+
+            res.cookie('token', jwtToken, cookieOptions);
 
             return res.redirect(frontendUrl);
         } catch (err) {
@@ -97,7 +107,11 @@ export class AuthController {
         if (!frontendUrl) {
             throw new Error('[Auth Error] FRONTEND_URL is required in .env!');
         }
-        res.clearCookie('token');
+        const cookieOptions: Record<string, any> = {};
+        if (process.env.COOKIE_DOMAIN) {
+            cookieOptions.domain = process.env.COOKIE_DOMAIN;
+        }
+        res.clearCookie('token', cookieOptions);
         return res.redirect(frontendUrl);
     }
 }

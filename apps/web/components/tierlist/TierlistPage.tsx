@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TierlistEditor, type SaveStatus } from '@/components/tierlist/TierlistEditor';
 import { TierlistReadonly } from '@/components/tierlist/TierlistReadonly';
 import { defaultEntries } from '@/components/tierlist/constants';
@@ -59,9 +59,69 @@ const statusText: Record<SaveStatus, string> = {
 
 const CAN_EDIT_ROLES = ['USER', 'ADMIN'];
 
-export function TierlistPage({ me, myTierlist, otherTierlists }: TierlistPageProps) {
+export function TierlistPage({
+  me: initialMe,
+  myTierlist: initialMyTierlist,
+  otherTierlists: initialOtherTierlists,
+}: TierlistPageProps) {
+  const [currentUser, setCurrentUser] = useState<User | null>(initialMe);
+  const [myList, setMyList] = useState<TierlistData | null>(initialMyTierlist);
+  const [otherList, setOtherList] = useState<TierlistData[]>(initialOtherTierlists);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
-  const canEdit = me && CAN_EDIT_ROLES.includes(me.role);
+
+  // Fallback / sync po stronie klienta:
+  // Jeśli SSR nie miał dostępu do ciasteczka sesji (np. w konfiguracji Docker lub między domenami),
+  // przeglądarka pobiera dane bezpośrednio z API z credentials: 'include'.
+  useEffect(() => {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl) return;
+
+    fetch(`${backendUrl}/graphql`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        query: `
+          query SyncTierlistClient {
+            me { id username globalName discordId avatar role }
+            allTierlists {
+              id userId entries updatedAt
+              user { id username globalName discordId avatar role }
+            }
+          }
+        `,
+      }),
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.data?.me) {
+          const clientMe: User = json.data.me;
+          setCurrentUser(clientMe);
+
+          const clientAll: TierlistData[] = (json.data.allTierlists ?? []).map((t: any) => ({
+            ...t,
+            entries: typeof t.entries === 'string' ? JSON.parse(t.entries) : t.entries,
+          }));
+
+          const clientMy = clientAll.find((t) => t.userId === clientMe.id) ?? null;
+          const clientOthers = clientAll.filter((t) => t.userId !== clientMe.id);
+
+          setMyList(clientMy);
+          setOtherList(clientOthers);
+        } else if (json.data?.allTierlists && otherList.length === 0) {
+          const clientAll: TierlistData[] = json.data.allTierlists.map((t: any) => ({
+            ...t,
+            entries: typeof t.entries === 'string' ? JSON.parse(t.entries) : t.entries,
+          }));
+          setOtherList(clientAll);
+        }
+      })
+      .catch((err) => {
+        console.error('[Tierlist Client Sync] Error:', err);
+      });
+  }, []);
+
+  const canEdit = currentUser && CAN_EDIT_ROLES.includes(currentUser.role);
 
   return (
     <div className="container mx-auto max-w-screen-xl px-6 py-10 flex flex-col gap-10">
@@ -69,11 +129,11 @@ export function TierlistPage({ me, myTierlist, otherTierlists }: TierlistPagePro
       {/* ── Własna tierlista ─────────────────────────────────── */}
       <section>
         <div className="mb-4 flex items-center gap-3">
-          {me && <UserAvatar user={me} size={36} />}
+          {currentUser && <UserAvatar user={currentUser} size={36} />}
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-semibold">
-                {me ? (me.globalName ?? me.username) : 'Twoja tierlista'}
+                {currentUser ? (currentUser.globalName ?? currentUser.username) : 'Twoja tierlista'}
                 <span className="ml-2 text-xs font-normal text-primary">[Ty]</span>
               </h2>
               {saveStatus !== 'idle' && (
@@ -90,20 +150,20 @@ export function TierlistPage({ me, myTierlist, otherTierlists }: TierlistPagePro
                 </span>
               )}
             </div>
-            {myTierlist && (
-              <p className="text-xs text-muted-foreground">Zaktualizowano {timeAgo(myTierlist.updatedAt)}</p>
+            {myList && (
+              <p className="text-xs text-muted-foreground">Zaktualizowano {timeAgo(myList.updatedAt)}</p>
             )}
           </div>
         </div>
 
         {canEdit ? (
           <TierlistEditor
-            initialEntries={myTierlist?.entries ?? defaultEntries()}
+            initialEntries={myList?.entries ?? defaultEntries()}
             onStatusChange={setSaveStatus}
           />
-        ) : me ? (
+        ) : currentUser ? (
           <div className="rounded-lg border border-white/10 bg-muted/30 px-6 py-8 text-center text-sm text-muted-foreground">
-            Twoje konto ma rolę <strong>{me.role}</strong>. Skontaktuj się z adminem, żeby uzyskać dostęp do edycji tierlisty.
+            Twoje konto ma rolę <strong>{currentUser.role}</strong>. Skontaktuj się z adminem, żeby uzyskać dostęp do edycji tierlisty.
           </div>
         ) : (
           <div className="rounded-lg border border-white/10 bg-muted/30 px-6 py-8 text-center text-sm text-muted-foreground">
@@ -113,13 +173,13 @@ export function TierlistPage({ me, myTierlist, otherTierlists }: TierlistPagePro
       </section>
 
       {/* ── Wall — inne tierlisty ─────────────────────────────── */}
-      {otherTierlists.length > 0 && (
+      {otherList.length > 0 && (
         <section>
           <h2 className="mb-6 text-xl font-semibold text-muted-foreground">
             Tierlisty społeczności
           </h2>
           <div className="flex flex-col gap-8">
-            {otherTierlists.map((t) => (
+            {otherList.map((t) => (
               <div key={t.id}>
                 <div className="mb-2 flex items-center gap-2.5">
                   <UserAvatar user={t.user} size={28} />
@@ -137,7 +197,7 @@ export function TierlistPage({ me, myTierlist, otherTierlists }: TierlistPagePro
         </section>
       )}
 
-      {otherTierlists.length === 0 && !canEdit && (
+      {otherList.length === 0 && !canEdit && (
         <p className="text-center text-sm text-muted-foreground">
           Nikt jeszcze nie stworzył tierlisty.
         </p>

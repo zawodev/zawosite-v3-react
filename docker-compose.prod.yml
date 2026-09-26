@@ -55,6 +55,7 @@ services:
         environment:
             PORT: 3000
             NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
+            INTERNAL_BACKEND_URL: http://api:4000
         depends_on:
             - api
         networks:

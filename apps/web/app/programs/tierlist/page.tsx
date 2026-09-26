@@ -1,7 +1,10 @@
 import { cookies } from 'next/headers';
 import { TierlistPage } from '@/components/tierlist/TierlistPage';
 
-const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL;
+const BACKEND =
+  process.env.INTERNAL_BACKEND_URL ||
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  'http://localhost:4000';
 
 async function gql(query: string, authCookie?: string) {
   try {
@@ -15,7 +18,8 @@ async function gql(query: string, authCookie?: string) {
       cache: 'no-store',
     });
     return res.json();
-  } catch {
+  } catch (err) {
+    console.error('[Tierlist SSR] Failed to fetch GraphQL from:', `${BACKEND}/graphql`, err);
     return { data: null };
   }
 }
