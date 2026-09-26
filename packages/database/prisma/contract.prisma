@@ -7,9 +7,21 @@ model User {
   globalName String?
   avatar     String?
   email      String?
+  role       String       @default("DEFAULT")  // DEFAULT | USER | ADMIN
   createdAt  Timestamp(3) @default(now())
   updatedAt  Timestamp(3) @default(now())
+  tierlist   Tierlist?
 
   @@map("User")
   @@index([discordId], map: "User_discordId_key", unique: true)
+}
+
+model Tierlist {
+  id        Int          @id @default(autoincrement())
+  userId    Int          @unique
+  entries   String                              // JSON string: { "abrams": "S", "bebop": "E", ... }
+  updatedAt Timestamp(3) @default(now())
+  user      User         @relation(fields: [userId], references: [id])
+
+  @@map("Tierlist")
 }

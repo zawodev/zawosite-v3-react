@@ -1,15 +1,18 @@
 import { AuthModule } from './auth/auth.module.js';
 import { UserModule } from './user/user.module.js';
+import { TierlistModule } from './tierlist/tierlist.module.js';
 import { JwtService } from '@nestjs/jwt';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { PrismaModule } from './prisma/prisma.module.js';
+import { JsonScalar } from './scalars/json.scalar.js';
 
 @Module({
     imports: [
         AuthModule,
         UserModule,
+        TierlistModule,
         PrismaModule,
         GraphQLModule.forRootAsync<ApolloDriverConfig>({
             driver: ApolloDriver,
@@ -27,7 +30,6 @@ import { PrismaModule } from './prisma/prisma.module.js';
                             });
                             req.userId = decoded.sub;
                         } catch {
-                            // nieważny token
                             console.error('Invalid JWT token');
                         }
                     }
@@ -36,5 +38,6 @@ import { PrismaModule } from './prisma/prisma.module.js';
             }),
         }),
     ],
+    providers: [JsonScalar],
 })
 export class AppModule {}

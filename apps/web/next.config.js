@@ -34,6 +34,11 @@ const nextConfig = {
         NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
         NEXT_PUBLIC_APP_VERSION: appVersion,
     },
+    images: {
+        remotePatterns: [
+            { protocol: 'https', hostname: 'cdn.discordapp.com' },
+        ],
+    },
 };
 
 export default nextConfig;

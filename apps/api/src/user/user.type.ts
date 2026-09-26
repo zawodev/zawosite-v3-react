@@ -19,4 +19,7 @@ export class UserType {
 
     @Field({ nullable: true })
     email?: string;
+
+    @Field()
+    role: string;
 }
