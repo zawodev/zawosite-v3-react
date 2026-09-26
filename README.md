@@ -35,9 +35,7 @@ version: v3.0.0
 
 ```bash
 git pull
-pnpm install
-pnpm db:migrate
-pnpm docker:prod:up
+docker compose -f docker-compose.prod.yml up -d --build
 ```
 
 ## TODO
