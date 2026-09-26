@@ -23,24 +23,34 @@ interface DropdownItem {
 // --- Definicje linków ---
 
 const appItems: DropdownItem[] = [
-    { label: 'App1', href: '/apps/app1', description: 'Placeholder — wkrótce' },
-    { label: 'App2', href: '/apps/app2', description: 'Placeholder — wkrótce' },
+    { label: 'app1', href: '/apps/app1', description: 'coming soon placeholder' },
+    { label: 'app2', href: '/apps/app2', description: 'coming soon placeholder' },
 ];
 
 const programItems: DropdownItem[] = [
     {
-        label: 'Stickers',
+        label: 'stickers',
         href: '/programs/stickers',
         disabled: true,
-        description: 'Twórz i zarządzaj naklejkami',
+        description: 'folder naklejki smieszne',
     },
-    { label: 'Notes', href: '/programs/notes', disabled: true, description: 'Notatki i listy' },
-    { label: 'Pulse', href: '/programs/pulse', disabled: true, description: 'Monitor aktywności' },
     {
-        label: 'Tierlist',
+        label: 'notes',
+        href: '/programs/notes',
+        disabled: true,
+        description: 'moje notatki wszelakie',
+    },
+    {
+        label: 'pulse',
+        href: '/programs/pulse',
+        disabled: true,
+        description: 'ten w sumie jest słaby, wywal',
+    },
+    {
+        label: 'tierlist',
         href: '/programs/tierlist',
         disabled: false,
-        description: 'Twórz tierlisty',
+        description: 'deadlock postacie tierlist',
     },
 ];
 
@@ -124,8 +134,8 @@ export function NavBar() {
                     {/* CV — zwykły link */}
                     <NavigationMenuItem>
                         <NavigationMenuLink
-                            href="/cv"
-                            active={pathname === '/cv'}
+                            href="/about-me"
+                            active={pathname === '/about-me'}
                             className="px-4 py-2 text-sm font-medium"
                         >
                             about me
